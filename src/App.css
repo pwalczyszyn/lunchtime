@@ -1,0 +1,24 @@
+.App {
+  text-align: center;
+}
+
+.App-feedsList {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0;
+}
+
+.App-feedsListItem {
+
+}
+
+.App-feedsListItem:not(:last-child) {
+    margin-bottom: 8px;
+}
+
+.App-dayInput-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
