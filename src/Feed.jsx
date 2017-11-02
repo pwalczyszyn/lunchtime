@@ -1,23 +1,35 @@
-/* global FB */
 import React from 'react';
 
-export default class Feed extends React.Component {
+import moment from 'moment';
 
-    constructor(props) {
-        super(props);
-        this.state = props.feed;
+const Post = ({post}) => {
+    console.log(post);
+    return <div className="App-postContainer">
+        <h3>
+            {moment(post.created_time).fromNow()}
+        </h3>
+        {post.message}
+    </div>;
+};
 
-        FB.api(`/${this.state.id}/feed`, 'get', null, response => this.displayPosts(response));
-    }
+const Feed = ({feed}) => {
+    const posts = feed.posts || [];
+    const todayNum = new Date().getDay();
+    const weekday = feed.weekdays.find(weekday => weekday.enabled && weekday.dayNum === todayNum);
+    const startTime = weekday && moment(weekday.startTime, 'hh:mm');
+    const endTime = weekday && moment(weekday.endTime, 'hh:mm');
 
-    displayPosts(response) {
-        console.log(response);
-    }
+    console.log(startTime, endTime);
 
-    render() {
-        return <li className="App-feedsListItem">
-            {this.state.id}
+    return <section className="App-feedsListItem">
 
-        </li>;
-    }
-}
+        <h1>
+            {feed.id}
+        </h1>
+
+        {posts.slice(0, 3).map(post => <Post key={post.id} post={post} />)}
+
+    </section>;
+};
+
+export default Feed;

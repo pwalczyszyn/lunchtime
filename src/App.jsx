@@ -16,7 +16,8 @@ class App extends React.Component {
         this.state = {
             signedIn: false,
             addNew: false,
-            feeds: this.getFeedsFromHash()
+            feeds: this.getFeedsFromHash(),
+            loading: true
         };
 
         if (window.fbSdkLoaded) {
@@ -32,12 +33,28 @@ class App extends React.Component {
           // Note: The call will only work if you accept the permission request
           //   FB.api('/me/feed', 'post', {message: 'Hello, world!'});
 
+          this.loadPosts();
+
           // Setting signed in state
           this.setState({
               signedIn: true
           });
 
         });
+    }
+
+    loadPosts() {
+        Promise.all(this.state.feeds.map(feed => new Promise(resolve => {
+            FB.api(`/${feed.id}/feed`, 'get', null, response => {
+                if (response.error) console.log('Error getting posts:', response.error);
+                response.error ? feed.errorLoading = response.error : feed.posts = response.data;
+                resolve();
+            });
+        }))).then(() => {
+            this.setState(() => ({
+                loading: false
+            }));
+        })
     }
 
     getFeedsFromHash() {
@@ -56,13 +73,22 @@ class App extends React.Component {
     }
 
     onAdd(newFeed) {
-        this.state.feeds.push(newFeed);
-        this.setFeedsHash();
-
-        this.setState({addNew: false});
+        this.setState(prevState => {
+            return {
+                addNew: false,
+                feeds: prevState.feeds.concat(newFeed)
+            }
+        }, () => {
+            this.setFeedsHash();
+        });
     }
 
     getSignedInView() {
+
+        if (this.state.loading) {
+            return <div>Loading...</div>;
+        }
+
         return (
             <div>
                 <button onClick={() => this.setState({addNew: true})}>Add New Feed</button>
@@ -71,11 +97,12 @@ class App extends React.Component {
                     ? <FeedEdit onAdd={newFeed => this.onAdd(newFeed)}/>
                     : undefined}
 
-                <ul className="App-feedsList">
+                <div>
                     {this.state.feeds.map(feed => {
                         return <Feed feed={feed} key={feed.id}/>
                     })}
-                </ul>
+                </div>
+
             </div>
         );
     }

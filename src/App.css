@@ -1,15 +1,16 @@
 .App {
-  text-align: center;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .App-feedsList {
-    list-style: none;
     padding: 0;
     margin: 16px 0 0;
 }
 
-.App-feedsListItem {
-
+.App-postContainer {
+    margin-top: 16px;
 }
 
 .App-feedsListItem:not(:last-child) {
